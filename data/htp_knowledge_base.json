@@ -1,0 +1,125 @@
+{
+  "Test_HTP_IA_Config": {
+    "Informacion_General": {
+      "Nombre": "Manual de Interpretacion H.T.P. (IA)",
+      "Descripcion": "Tecnica proyectiva grafica para evaluar la personalidad global, situacion familiar y autoimagen [1, 4, 5].",
+      "Administracion": {
+        "Materiales": "Hojas A4 blancas, lapiz n. 2, goma de borrar (opcional) [3, 6].",
+        "Secuencia": "1. Casa (horizontal), 2. Arbol (vertical), 3. Persona (vertical) [3, 7].",
+        "Consigna": "Dibuje lo mejor que pueda una casa, un arbol y una persona [3, 7]."
+      }
+    },
+    "Pautas_Formales": {
+      "Ubicacion_Espacial": {
+        "Zona_Superior": "Simboliza **intelectualidad, fantasia, ideales** y optimismo [8, 9].",
+        "Zona_Media": "Representa el **YO, los afectos, sentimientos** y la realidad inmediata [8, 10].",
+        "Zona_Inferior": "Indica impulsos, instintos, necesidades materiales e **inseguridad** [8, 11].",
+        "Margen_Izquierdo": "Vinculado al pasado, introversion y **dependencia materna** [8, 12, 13].",
+        "Margen_Derecho": "Representa el futuro, extraversion, **sociabilidad y figura paterna** [8, 14].",
+        "Centro": "Revela equilibrio emocional y **seguridad en si mismo** [12, 15]."
+      },
+      "Tamano_Dibujo": {
+        "Grande": "Refleja **autoconfianza, vitalidad** y orgullo, pero puede indicar agresividad si invade la hoja [16, 17].",
+        "Pequeno": "Significa modestia, **baja autoestima, timidez** e inhibicion de impulsos [16, 18].",
+        "Normal": "Adecuacion al medio y equilibrio entre introversion y extraversion [16, 19]."
+      },
+      "Trazo_y_Presion": {
+        "Firme": "Seguridad, **fortaleza ante obstaculos** y estabilidad emocional [16, 20].",
+        "Debil": "Energia deficiente, **timidez, inseguridad** o posible tendencia depresiva [21, 22].",
+        "Grueso_Remarcado": "Tendencia a la accion, **irritabilidad y agresividad** [22, 23].",
+        "Entrecortado": "Inseguridad y posibles **problemas neurologicos** [21, 24]."
+      }
+    },
+    "Interpretacion_Contenido": {
+      "La_Casa": {
+        "Representacion": "Simboliza la situacion familiar y la **vida hogarena** [1, 25, 26].",
+        "Techo": {
+          "Grande": "Exceso de fantasia e **intelectualizacion** [27-29].",
+          "Sin_Techo": "Personalidad concreta, pragmatica y **falta de imaginacion** [27].",
+          "Remarcado": "Esfuerzo por controlar fantasias que se sienten amenazantes [29, 30]."
+        },
+        "Paredes": {
+          "Firmes": "Fortaleza del YO y **estabilidad de la personalidad** [31-33].",
+          "Transparentes": "Deterioro grave en el **criterio de realidad** [31, 33, 34].",
+          "Desmoronandose": "Yo en proceso de desintegracion [33, 35]."
+        },
+        "Puerta": {
+          "Grande": "Sociabilidad, hospitalidad y **dependencia del medio** [31, 36, 37].",
+          "Pequena": "Inhibicion, **temor a las relaciones interpersonales** y alejamiento [31, 36, 37].",
+          "Abierta": "Necesidad de afecto y vulnerabilidad si la casa esta vacia [31, 36, 37]."
+        },
+        "Complementos": {
+          "Humo_Denso": "Conflictos familiares y **tension interna considerable** [38-40].",
+          "Perspectiva_Ojo_Pajaro": "Sentimientos de superioridad y **rebelion contra valores tradicionales** [41, 42].",
+          "Cercos": "Maniobra defensiva para **aislarse de los demas** [43-45]."
+        }
+      },
+      "El_Arbol": {
+        "Representacion": "Representa lo mas profundo, **primitivo e inconsciente** de la personalidad [1, 26, 46].",
+        "Tronco": {
+          "Grueso": "Fortaleza yoica y **resistencia frente a presiones** [47, 48].",
+          "Delgado_Debil": "Debilidad yoica, fragilidad y **sensibilidad extrema** [47, 49, 50].",
+          "Con_Agujeros": "Sentimiento de que una parte de la personalidad esta **fuera de control o disociada** [50, 51].",
+          "Indice_Wittgenstein": "Calculo (Altura Arbol / Edad) para identificar **edades de traumas o eventos significativos** marcados en el tronco [52-57]."
+        },
+        "Copa": {
+          "Grande": "Extraversion, ambicion y **actividad mental intensa** [58, 59].",
+          "Sombreada": "Ansiedad, ensonacion y posible **falta de claridad** [58, 60].",
+          "Tipo_Cerradura": "Indica conductas **oposicionistas y negativistas** [61-63]."
+        },
+        "Ramas": {
+          "Hacia_Arriba": "Idealismo, optimismo y **deseo de superacion** [64].",
+          "En_Punta": "Hostilidad, **agresividad y espiritu critico** [48, 63, 64].",
+          "Cortadas": "Sensacion de trauma, **castracion o proyectos fallidos** [65-67]."
+        },
+        "Raices": {
+          "Destacadas": "Excesiva preocupacion por el **contacto con la realidad** [51, 68].",
+          "Como_Garras": "Esfuerzo ansioso por 'agarrarse' al suelo ante un posible **derrumbamiento psiquico** [68, 69]."
+        }
+      },
+      "La_Persona": {
+        "Representacion": "Refleja la autoimagen, el **autoconcepto y el ideal del YO** [1, 70, 71].",
+        "Cabeza": {
+          "Grande": "Intelectualizacion y **compensacion de sentimientos de inferioridad** [28, 72, 73].",
+          "Pequena": "Sentimientos de inferioridad intelectual y **timidez** [28, 72]."
+        },
+        "Cuello": {
+          "Largo": "Exacerbacion del **control de los impulsos** o disociacion [74-76].",
+          "Omitido": "Impulsividad y **falta de control racional** [74, 76, 77]."
+        },
+        "Brazos_y_Manos": {
+          "Omitidos": "Culpa, **inadaptacion y graves problemas de comunicacion** [39, 78, 79].",
+          "Manos_en_Bolsillos": "Evasion, **sentimientos de culpa** y posible tendencia onanista [77, 78].",
+          "Punios_Cerrados": "Agresividad contenida y **rebeldia reprimida** [80, 81]."
+        },
+        "Piernas_y_Pies": {
+          "Pies_en_Punta": "Inseguridad, **inestabilidad y falta de apoyo** [82, 83].",
+          "Sin_Pies": "Inmadurez y falta de **aplomo o confianza en si mismo** [82, 83]."
+        }
+      }
+    },
+    "Patologias_y_Personalidad": {
+      "Personalidad_Obsesiva": "Se detecta por el **detallismo excesivo**, simetria rigida y lineas rectas [84, 85].",
+      "Personalidad_Depresiva": "Dibujos pequenos, ubicados abajo, **trazos debiles** y elementos que caen [86, 87].",
+      "Personalidad_Paranoide": "Enfasis en los ojos y orejas, **mirada fija** y presencia de cerraduras o rejas [18, 88, 89].",
+      "Psicosis_Indicadores": "Desintegracion de la gestalt, **transparencias en adultos**, figuras deshumanizadas (robots) y desorganizacion de partes [39, 90, 91].",
+      "Neurosis_Indicadores": "Gestalt conservada, armonia, **buena identificacion sexual** y ausencia de transparencias [92]."
+    },
+    "Simbologia_Color": {
+      "Azul": "Calma, serenidad y **necesidad de afecto** [25, 93, 94].",
+      "Rojo": "Vitalidad, **pasion, energia** y posible agresividad [25, 93, 94].",
+      "Verde": "Autoafirmacion, **autoestima** y perseverancia [25, 94, 95].",
+      "Negro": "Angustia, miedo, **negacion de la actividad** y pesimismo [25, 96, 97]."
+    },
+    "Notas_Implementacion": {
+      "Prioridad_Gestaltica": "Primero analiza la impresion global (gestalt) del dibujo completo antes de examinar detalles especificos. La primera impresion es clinicamente relevante.",
+      "Deteccion_Recurrencias": "Si observas el mismo patron en Casa, Arbol y Persona (ej. trazos debiles en los 3), marcalo como un rasgo de personalidad consolidado y consistente.",
+      "Filtro_Edad": {
+        "Ninos": "Las transparencias y omisiones son normales en ninos pequenos. No interpretar como patologia.",
+        "Adolescentes": "Mayor variabilidad en la expresion grafica. Considerar conflicto de identidad como normal.",
+        "Adultos": "Las transparencias, omisiones de partes corporales y desproporciones severas si son indicadores patologicos."
+      },
+      "Integracion_Interpretativa": "Los indicadores no deben interpretarse de forma aislada. Busca convergencia de multiples senales antes de establecer un diagnostico."
+    }
+  }
+}
