@@ -230,6 +230,33 @@ El usuario ha subido una UNICA imagen que contiene los tres elementos del test H
 
 ---
 
+## FORMATO DE SALIDA (OBLIGATORIO)
+
+**REGLAS ESTRICTAS DE FORMATO:**
+
+1. **NO uses separadores de pagina**: PROHIBIDO usar "--- PAGE X ---", "--- Pagina X ---", "[Pagina X]" o cualquier variante.
+2. **NO uses lineas horizontales como separadores**: PROHIBIDO usar "---", "***" o "___" entre secciones. Usa uniquement encabezados (# ## ###) para estructurar.
+3. **NO uses saltos de linea triples**: Escribe en parrafos continuos, no dejes lineas en blanco excesivas.
+4. **Markdown continuo**: El texto debe ser un documento Markdown fluido y continuo.
+5. **Solo encabezados oficiales**: Para separar secciones usa # (titulo principal), ## (seccion), ### (subseccion).
+
+Ejemplo de formato correcto:
+# TITULO PRINCIPAL
+## Seccion Uno
+Contenido del parrafo aqui. Mas contenido.
+## Seccion Dos
+Otro parrafo aqui.
+
+Ejemplo de formato incorrecto (PROHIBIDO):
+---
+--- PAGE 1 ---
+---
+Contenido
+
+---
+otro contenido
+---
+
 **NOTA FINAL**: Este analisis se basa en el Manual de Interpretacion H.T.P. (IA) y debe ser validado por un profesional de la psicologia clinica. Los indicadores aislados no constituyen diagnostico; la interpretacion requiere convergencia de multiples senales y consideracion del contexto del paciente.`
 
   const isVisionModel = model.includes('vision') || model.includes('llama-4-scout') || model.includes('llama-4')

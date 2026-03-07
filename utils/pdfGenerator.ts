@@ -23,11 +23,24 @@ interface TextSegment {
 
 function parseMarkdown(text: string): TextSegment[] {
   const segments: TextSegment[] = []
-  const lines = text.split('\n')
+  
+  const cleanedText = text
+    .replace(/---?\s*PAGE\s*\d+\s*---?/gi, '')
+    .replace(/\[PAGE\s*\d+\]/gi, '')
+    .replace(/Pagina\s*\d+/gi, '')
+    .replace(/Page\s*\d+/gi, '')
+    .replace(/^\s*[-*_]{3,}\s*$/gm, '')
+    .replace(/\n{3,}/g, '\n')
+  
+  const lines = cleanedText.split('\n')
   
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
     const trimmed = line.trim()
+    
+    if (trimmed === '' || trimmed.length === 0) {
+      continue
+    }
     
     if (trimmed.startsWith('### ')) {
       segments.push({ text: trimmed.substring(4), style: 'heading3' })
@@ -40,7 +53,7 @@ function parseMarkdown(text: string): TextSegment[] {
     } else if (/^\d+\.\s/.test(trimmed)) {
       segments.push({ text: trimmed.replace(/^\d+\.\s/, ''), style: 'bullet' })
     } else if (trimmed === '---' || trimmed === '***' || trimmed === '___') {
-      segments.push({ text: '', style: 'normal' })
+      continue
     } else if (trimmed.length > 0) {
       const processed = processInlineStyles(trimmed)
       if (processed.length > 0) {
@@ -48,8 +61,6 @@ function parseMarkdown(text: string): TextSegment[] {
       } else {
         segments.push({ text: trimmed, style: 'normal' })
       }
-    } else {
-      segments.push({ text: '', style: 'normal' })
     }
   }
   
@@ -211,55 +222,57 @@ export async function generatePDF(
     const renderCurrentLine = () => {
       if (currentLineSegments.length === 0) return
       
-      let xOffset = margin
       const lineHeight = 5
+      let allLines: { text: string; style: string }[] = []
       
       for (const seg of currentLineSegments) {
         if (seg.text === '') continue
         
+        pdf.setFontSize(seg.style === 'bold' || seg.style === 'italic' ? 10 : 10)
+        pdf.setFont('helvetica', seg.style === 'bold' ? 'bold' : seg.style === 'italic' ? 'italic' : 'normal')
+        
+        const segLines = pdf.splitTextToSize(seg.text, maxWidth)
+        
+        for (let i = 0; i < segLines.length; i++) {
+          allLines.push({
+            text: segLines[i],
+            style: seg.style
+          })
+        }
+      }
+      
+      if (allLines.length > 1) {
+        const lastLine = allLines[allLines.length - 1].text.trim()
+        const MIN_ORPHAN_CHARS = 3
+        
+        if (lastLine.length < MIN_ORPHAN_CHARS && lastLine.length > 0) {
+          const secondLastLine = allLines[allLines.length - 2]
+          secondLastLine.text = secondLastLine.text + ' ' + lastLine
+          allLines.pop()
+        }
+      }
+      
+      for (let i = 0; i < allLines.length; i++) {
+        const line = allLines[i]
         addNewPageIfNeeded(6)
         
-        switch (seg.style) {
-          case 'heading1':
-            pdf.setFontSize(16)
-            pdf.setFont('helvetica', 'bold')
-            break
-          case 'heading2':
-            pdf.setFontSize(14)
-            pdf.setFont('helvetica', 'bold')
-            break
-          case 'heading3':
-            pdf.setFontSize(12)
-            pdf.setFont('helvetica', 'bold')
-            break
+        const style = line.style as 'normal' | 'bold' | 'italic'
+        switch (style) {
           case 'bold':
-            pdf.setFontSize(10)
             pdf.setFont('helvetica', 'bold')
             break
           case 'italic':
-            pdf.setFontSize(10)
             pdf.setFont('helvetica', 'italic')
             break
           default:
-            pdf.setFontSize(10)
             pdf.setFont('helvetica', 'normal')
         }
         
-        const lines = pdf.splitTextToSize(seg.text, maxWidth)
-        for (let i = 0; i < lines.length; i++) {
-          addNewPageIfNeeded(6)
-          pdf.text(lines[i], xOffset, yPosition)
-          if (i < lines.length - 1) {
-            yPosition += lineHeight
-            xOffset = margin
-          }
-        }
-        
-        const textWidth = pdf.getTextWidth(seg.text)
-        xOffset += textWidth
+        pdf.text(line.text, margin, yPosition)
+        yPosition += lineHeight
       }
       
-      yPosition += 6
+      yPosition += 4
       currentLineSegments = []
     }
 
