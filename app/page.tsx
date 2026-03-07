@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import NextImage from 'next/image'
 import ReactMarkdown from 'react-markdown'
-import { generatePDF, shareWhatsApp, shareEmail } from '@/utils/pdfGenerator'
+import { generatePDF } from '@/utils/pdfGenerator'
 
 interface PatientData {
   name: string
@@ -193,11 +193,6 @@ export default function Home() {
     await generatePDF(patientData, [result])
   }
 
-  const getSummary = () => {
-    if (!result) return ''
-    return result.result.substring(0, 300) + '...'
-  }
-
   const inputBaseClass = "w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
 
   return (
@@ -359,26 +354,12 @@ export default function Home() {
           <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
             <div className="flex flex-wrap gap-4 justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-slate-700">Resultados del Analisis HTP</h2>
-              <div className="flex gap-2">
-                <button
-                  onClick={generateReport}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition"
-                >
-                  Generar PDF
-                </button>
-                <button
-                  onClick={() => shareWhatsApp(patientData, getSummary())}
-                  className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition"
-                >
-                  WhatsApp
-                </button>
-                <button
-                  onClick={() => shareEmail(patientData, getSummary())}
-                  className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-medium transition"
-                >
-                  Email
-                </button>
-              </div>
+              <button
+                onClick={generateReport}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition"
+              >
+                Generar PDF
+              </button>
             </div>
 
             <div className="border border-slate-200 rounded-lg p-4">
