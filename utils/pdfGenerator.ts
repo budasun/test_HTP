@@ -21,112 +21,80 @@ interface TextSegment {
   style: 'normal' | 'bold' | 'italic' | 'heading1' | 'heading2' | 'heading3' | 'bullet'
 }
 
+/**
+ * PARSER OPTIMIZADO: Unifica párrafos, limpia basura de la IA y 
+ * evita cortes de prosa inconsistentes.
+ */
 function parseMarkdown(text: string): TextSegment[] {
   const segments: TextSegment[] = []
-  
+
+  // 1. Limpieza profunda de ruido de la IA
   const cleanedText = text
-    .replace(/---?\s*PAGE\s*\d+\s*---?/gi, '')
-    .replace(/\[PAGE\s*\d+\]/gi, '')
-    .replace(/Pagina\s*\d+/gi, '')
-    .replace(/Page\s*\d+/gi, '')
-    .replace(/^\s*[-*_]{3,}\s*$/gm, '')
-    .replace(/\n{3,}/g, '\n')
-  
+    .replace(/---?\s*PAGE\s*\d+\s*---?/gi, '') // Elimina --- PAGE 1 ---
+    .replace(/\[PAGE\s*\d+\]/gi, '')           // Elimina [PAGE 1]
+    .replace(/\[\d+(?:,\s*\d+)*\]/g, '')      // Elimina citas tipo [34, 78]
+    .replace(/^\s*[-*_]{3,}\s*$/gm, '')       // Elimina líneas de separación
+    .replace(/\r\n/g, '\n')
+
   const lines = cleanedText.split('\n')
-  
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-    const trimmed = line.trim()
-    
-    if (trimmed === '' || trimmed.length === 0) {
-      continue
-    }
-    
-    if (trimmed.startsWith('### ')) {
-      segments.push({ text: trimmed.substring(4), style: 'heading3' })
-    } else if (trimmed.startsWith('## ')) {
-      segments.push({ text: trimmed.substring(3), style: 'heading2' })
-    } else if (trimmed.startsWith('# ')) {
-      segments.push({ text: trimmed.substring(2), style: 'heading1' })
-    } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-      segments.push({ text: trimmed.substring(2), style: 'bullet' })
-    } else if (/^\d+\.\s/.test(trimmed)) {
-      segments.push({ text: trimmed.replace(/^\d+\.\s/, ''), style: 'bullet' })
-    } else if (trimmed === '---' || trimmed === '***' || trimmed === '___') {
-      continue
-    } else if (trimmed.length > 0) {
-      const processed = processInlineStyles(trimmed)
-      if (processed.length > 0) {
-        segments.push(...processed)
-      } else {
-        segments.push({ text: trimmed, style: 'normal' })
-      }
+  let paragraphBuffer = ""
+
+  const flushBuffer = () => {
+    if (paragraphBuffer.trim()) {
+      segments.push(...processInlineStyles(paragraphBuffer.trim()))
+      segments.push({ text: '\n', style: 'normal' }) // Marcador de fin de párrafo
+      paragraphBuffer = ""
     }
   }
-  
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim()
+
+    if (line === '') {
+      flushBuffer()
+      continue
+    }
+
+    // Detectar estructuras que NO son párrafos (Headers y Bullets)
+    if (line.startsWith('#') || line.startsWith('- ') || line.startsWith('* ') || /^\d+\.\s/.test(line)) {
+      flushBuffer()
+
+      if (line.startsWith('### ')) segments.push({ text: line.substring(4), style: 'heading3' })
+      else if (line.startsWith('## ')) segments.push({ text: line.substring(3), style: 'heading2' })
+      else if (line.startsWith('# ')) segments.push({ text: line.substring(2), style: 'heading1' })
+      else {
+        // Normalizar bullets
+        const bulletContent = line.replace(/^[-*]\s|^\d+\.\s/, '')
+        segments.push({ text: bulletContent, style: 'bullet' })
+      }
+    } else {
+      // Es parte de un párrafo: lo unimos con un espacio
+      paragraphBuffer += (paragraphBuffer ? " " : "") + line
+    }
+  }
+  flushBuffer()
+
   return segments
 }
 
 function processInlineStyles(text: string): TextSegment[] {
   const segments: TextSegment[] = []
-  let remaining = text
-  
-  const boldRegex = /\*\*(.+?)\*\*/g
-  const italicRegex = /(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g
-  
-  let match
-  let lastIndex = 0
-  const partMatches: { type: 'bold' | 'italic' | 'normal'; text: string; start: number; end: number }[] = []
-  
-  boldRegex.lastIndex = 0
-  while ((match = boldRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      partMatches.push({ type: 'normal', text: text.slice(lastIndex, match.index), start: lastIndex, end: match.index })
-    }
-    partMatches.push({ type: 'bold', text: match[1], start: match.index, end: match.index + match[0].length })
-    lastIndex = match.index + match[0].length
-  }
-  
-  if (lastIndex < text.length) {
-    partMatches.push({ type: 'normal', text: text.slice(lastIndex), start: lastIndex, end: text.length })
-  }
-  
-  if (partMatches.length === 0) {
-    partMatches.push({ type: 'normal', text: text, start: 0, end: text.length })
-  }
-  
-  for (const part of partMatches) {
-    if (part.type === 'bold') {
-      segments.push({ text: part.text, style: 'bold' })
-    } else if (part.type === 'normal') {
-      italicRegex.lastIndex = 0
-      let italicLastIndex = 0
-      let innerMatch
-      const italicMatches: { text: string; start: number; end: number }[] = []
-      
-      while ((innerMatch = italicRegex.exec(part.text)) !== null) {
-        if (innerMatch.index > italicLastIndex) {
-          italicMatches.push({ text: part.text.slice(italicLastIndex, innerMatch.index), start: italicLastIndex, end: innerMatch.index })
-        }
-        italicMatches.push({ text: innerMatch[1], start: innerMatch.index, end: innerMatch.index + innerMatch[0].length })
-        italicLastIndex = innerMatch.index + innerMatch[0].length
-      }
-      
-      if (italicLastIndex < part.text.length) {
-        italicMatches.push({ text: part.text.slice(italicLastIndex), start: italicLastIndex, end: part.text.length })
-      }
-      
-      if (italicMatches.length === 0) {
-        segments.push({ text: part.text, style: 'normal' })
+  // Regex simplificada para capturar negritas (prioritario)
+  const parts = text.split(/(\*\*.*?\*\*)/g)
+
+  for (const part of parts) {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      segments.push({ text: part.slice(2, -2), style: 'bold' })
+    } else if (part.length > 0) {
+      // Manejo simple de itálicas dentro de lo normal
+      if (part.startsWith('*') && part.endsWith('*')) {
+        segments.push({ text: part.slice(1, -1), style: 'italic' })
       } else {
-        for (const im of italicMatches) {
-          segments.push({ text: im.text, style: im.text !== part.text.slice(im.start, im.end) ? 'italic' : 'normal' })
-        }
+        segments.push({ text: part, style: 'normal' })
       }
     }
   }
-  
-  return segments.filter(s => s.text.length > 0)
+  return segments
 }
 
 export async function generatePDF(
@@ -136,228 +104,113 @@ export async function generatePDF(
   const pdf = new jsPDF('p', 'mm', 'a4')
   const pageWidth = pdf.internal.pageSize.getWidth()
   const pageHeight = pdf.internal.pageSize.getHeight()
-  const margin = 15
+  const margin = 20 // Margen más amplio y profesional
   let yPosition = margin
 
   const addNewPageIfNeeded = (neededHeight: number) => {
     if (yPosition + neededHeight > pageHeight - margin) {
       pdf.addPage()
       yPosition = margin
+      return true
     }
+    return false
   }
 
-  pdf.setFontSize(20)
-  pdf.setFont('helvetica', 'bold')
-  pdf.text('REPORTE DE EVALUACION HTP', pageWidth / 2, yPosition, { align: 'center' })
+  // Encabezado del Reporte
+  pdf.setFontSize(18).setFont('helvetica', 'bold')
+  pdf.text('REPORTE DE EVALUACIÓN PSICOMÉTRICA HTP', pageWidth / 2, yPosition, { align: 'center' })
   yPosition += 15
 
-  pdf.setFontSize(12)
+  // Datos del Paciente en bloque
+  pdf.setFontSize(10).setFont('helvetica', 'bold')
+  pdf.text('DATOS DEL PACIENTE', margin, yPosition)
+  yPosition += 6
   pdf.setFont('helvetica', 'normal')
-  pdf.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, margin, yPosition)
-  yPosition += 8
-  pdf.text(`Paciente: ${patientData.name}`, margin, yPosition)
-  yPosition += 8
-  pdf.text(`Edad: ${patientData.age} anos`, margin, yPosition)
-  yPosition += 8
-  pdf.text(`Sexo: ${patientData.sex}`, margin, yPosition)
-  yPosition += 15
-
-  pdf.setDrawColor(200, 200, 200)
-  pdf.line(margin, yPosition, pageWidth - margin, yPosition)
+  pdf.text(`Nombre: ${patientData.name}`, margin, yPosition)
+  pdf.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, pageWidth - margin - 40, yPosition)
+  yPosition += 5
+  pdf.text(`Edad: ${patientData.age} años | Sexo: ${patientData.sex}`, margin, yPosition)
   yPosition += 10
 
-  const typeNames: Record<string, string> = {
-    'htp-complete': 'Hoja Completa HTP',
-    casa: 'Casa',
-    arbol: 'Arbol',
-    persona1: 'Persona 1',
-    persona2: 'Persona 2',
-  }
-
-  const contextNames: Record<string, string> = {
-    clinica: 'Contexto Clinico',
-    laboral: 'Contexto Laboral',
-    forense: 'Contexto Forense',
-  }
+  pdf.setDrawColor(180).line(margin, yPosition, pageWidth - margin, yPosition)
+  yPosition += 12
 
   for (const item of results) {
-    addNewPageIfNeeded(80)
+    addNewPageIfNeeded(40)
 
-    pdf.setFontSize(14)
-    pdf.setFont('helvetica', 'bold')
-    pdf.text(`ANALISIS: ${typeNames[item.imageType] || item.imageType}`, margin, yPosition)
+    // Título de Sección
+    pdf.setFontSize(14).setFont('helvetica', 'bold')
+    const title = item.imageType === 'htp-complete' ? 'ANÁLISIS INTEGRAL HTP' : `ANÁLISIS: ${item.imageType.toUpperCase()}`
+    pdf.text(title, margin, yPosition)
     yPosition += 8
 
-    if (item.context) {
-      pdf.setFontSize(10)
-      pdf.setFont('helvetica', 'italic')
-      pdf.text(`Tipo: ${contextNames[item.context] || item.context}`, margin, yPosition)
-      yPosition += 6
-    }
-
-    pdf.setFontSize(9)
-    pdf.setFont('helvetica', 'normal')
-    pdf.text(`Modelo: ${item.model}`, margin, yPosition)
-    yPosition += 8
-
+    // Imagen (si existe)
     if (item.imageData) {
       try {
-        const imgWidth = item.imageType === 'htp-complete' ? 100 : 60
-        const imgHeight = item.imageType === 'htp-complete' ? 75 : 45
-        pdf.addImage(item.imageData, 'JPEG', margin, yPosition, imgWidth, imgHeight)
-        yPosition += imgHeight + 10
-      } catch (e) {
-        console.error('Error adding image to PDF:', e)
-      }
+        const imgW = 100, imgH = 75
+        addNewPageIfNeeded(imgH + 10)
+        pdf.addImage(item.imageData, 'JPEG', (pageWidth - imgW) / 2, yPosition, imgW, imgH)
+        yPosition += imgH + 12
+      } catch (e) { console.error(e) }
     }
-
-    pdf.setFontSize(10)
-    pdf.setFont('helvetica', 'normal')
 
     const segments = parseMarkdown(item.result)
-    const maxWidth = pageWidth - 2 * margin
+    const maxWidth = pageWidth - (margin * 2)
 
-    let currentLineSegments: TextSegment[] = []
-    
-    const renderCurrentLine = () => {
-      if (currentLineSegments.length === 0) return
-      
-      const lineHeight = 5
-      let allLines: { text: string; style: string }[] = []
-      
-      for (const seg of currentLineSegments) {
-        if (seg.text === '') continue
-        
-        pdf.setFontSize(seg.style === 'bold' || seg.style === 'italic' ? 10 : 10)
-        pdf.setFont('helvetica', seg.style === 'bold' ? 'bold' : seg.style === 'italic' ? 'italic' : 'normal')
-        
-        const segLines = pdf.splitTextToSize(seg.text, maxWidth)
-        
-        for (let i = 0; i < segLines.length; i++) {
-          allLines.push({
-            text: segLines[i],
-            style: seg.style
-          })
-        }
+    // RENDERIZADO DE BLOQUES
+    for (const seg of segments) {
+      if (seg.text === '\n') {
+        yPosition += 4 // Espacio entre párrafos
+        continue
       }
-      
-      if (allLines.length > 1) {
-        const lastLine = allLines[allLines.length - 1].text.trim()
-        const MIN_ORPHAN_CHARS = 3
-        
-        if (lastLine.length < MIN_ORPHAN_CHARS && lastLine.length > 0) {
-          const secondLastLine = allLines[allLines.length - 2]
-          secondLastLine.text = secondLastLine.text + ' ' + lastLine
-          allLines.pop()
-        }
+
+      // Configuración de Estilos
+      let fontSize = 10
+      let fontStyle = 'normal'
+      let indent = 0
+      let prefix = ""
+
+      switch (seg.style) {
+        case 'heading1': fontSize = 14; fontStyle = 'bold'; yPosition += 4; break
+        case 'heading2': fontSize = 12; fontStyle = 'bold'; yPosition += 2; break
+        case 'heading3': fontSize = 11; fontStyle = 'bold'; break
+        case 'bold': fontStyle = 'bold'; break
+        case 'italic': fontStyle = 'italic'; break
+        case 'bullet': indent = 6; prefix = "• "; break
       }
-      
-      for (let i = 0; i < allLines.length; i++) {
-        const line = allLines[i]
+
+      pdf.setFontSize(fontSize).setFont('helvetica', fontStyle)
+
+      // Ajuste de texto al ancho
+      const lines = pdf.splitTextToSize(prefix + seg.text, maxWidth - indent)
+
+      for (const line of lines) {
         addNewPageIfNeeded(6)
-        
-        const style = line.style as 'normal' | 'bold' | 'italic'
-        switch (style) {
-          case 'bold':
-            pdf.setFont('helvetica', 'bold')
-            break
-          case 'italic':
-            pdf.setFont('helvetica', 'italic')
-            break
-          default:
-            pdf.setFont('helvetica', 'normal')
-        }
-        
-        pdf.text(line.text, margin, yPosition)
-        yPosition += lineHeight
+        pdf.text(line, margin + indent, yPosition)
+        yPosition += 5.5 // Interlineado
       }
-      
-      yPosition += 4
-      currentLineSegments = []
     }
 
-    for (const segment of segments) {
-      if (segment.text === '') {
-        renderCurrentLine()
-        yPosition += 4
-        continue
-      }
-
-      if (segment.style === 'heading1' || segment.style === 'heading2' || segment.style === 'heading3') {
-        renderCurrentLine()
-        addNewPageIfNeeded(10)
-        
-        if (segment.style === 'heading1') {
-          pdf.setFontSize(16)
-          pdf.setFont('helvetica', 'bold')
-          yPosition += 4
-        } else if (segment.style === 'heading2') {
-          pdf.setFontSize(14)
-          pdf.setFont('helvetica', 'bold')
-          yPosition += 2
-        } else {
-          pdf.setFontSize(12)
-          pdf.setFont('helvetica', 'bold')
-        }
-        
-        const lines = pdf.splitTextToSize(segment.text, maxWidth)
-        for (const line of lines) {
-          addNewPageIfNeeded(10)
-          pdf.text(line, margin, yPosition)
-          yPosition += 7
-        }
-        continue
-      }
-
-      if (segment.style === 'bullet') {
-        renderCurrentLine()
-        addNewPageIfNeeded(6)
-        pdf.setFontSize(10)
-        pdf.setFont('helvetica', 'normal')
-        const lines = pdf.splitTextToSize(segment.text, maxWidth - 10)
-        for (const line of lines) {
-          addNewPageIfNeeded(6)
-          pdf.text('• ' + line, margin + 5, yPosition)
-          yPosition += 5
-        }
-        continue
-      }
-
-      currentLineSegments.push(segment)
-    }
-
-    renderCurrentLine()
-
-    yPosition += 10
-    pdf.setDrawColor(220, 220, 220)
-    pdf.line(margin, yPosition, pageWidth - margin, yPosition)
-    yPosition += 10
+    yPosition += 10 // Separación entre resultados de imágenes
   }
 
-  pdf.setFontSize(8)
-  pdf.setFont('helvetica', 'italic')
-  pdf.text(
-    'Reporte generado por HTP AI Analyst - Uso exclusivo para fines profesionales',
-    pageWidth / 2,
-    pageHeight - 10,
-    { align: 'center' }
-  )
+  // Pie de página ético
+  pdf.setFontSize(8).setFont('helvetica', 'italic').setTextColor(100)
+  const footerText = "Nota: Este reporte es una hipótesis diagnóstica generada por IA y debe ser validada por un psicólogo colegiado."
+  pdf.text(footerText, pageWidth / 2, pageHeight - 10, { align: 'center' })
 
-  const fileName = `HTP_Report_${patientData.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+  const fileName = `HTP_Report_${patientData.name.replace(/\s+/g, '_')}.pdf`
   pdf.save(fileName)
 }
 
+// WhatsApp y Email (se mantienen igual pero con mejor encoding)
 export function shareWhatsApp(patientData: PatientData, summary: string): void {
-  const text = encodeURIComponent(
-    `*REPORTE HTP - ${patientData.name}*\n\n${summary}\n\n_Generado por HTP AI Analyst_`
-  )
+  const text = encodeURIComponent(`*REPORTE HTP - ${patientData.name}*\n\n${summary.slice(0, 500)}...\n\n_Generado por HTP AI Analyst_`)
   window.open(`https://wa.me/?text=${text}`, '_blank')
 }
 
 export function shareEmail(patientData: PatientData, summary: string): void {
   const subject = encodeURIComponent(`Reporte HTP - ${patientData.name}`)
-  const body = encodeURIComponent(
-    `Reporte de Evaluacion HTP\n\nPaciente: ${patientData.name}\nEdad: ${patientData.age}\nSexo: ${patientData.sex}\n\n${summary}\n\nGenerado por HTP AI Analyst`
-  )
+  const body = encodeURIComponent(`Paciente: ${patientData.name}\n\n${summary}\n\nGenerado por HTP AI Analyst`)
   window.location.href = `mailto:?subject=${subject}&body=${body}`
 }
