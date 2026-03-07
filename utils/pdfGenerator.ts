@@ -21,9 +21,10 @@ interface TextSegment {
   style: 'normal' | 'bold' | 'italic' | 'heading1' | 'heading2' | 'heading3' | 'bullet'
 }
 
+// --- PARSER LÓGICO ---
+
 function parseMarkdown(text: string): TextSegment[] {
   const segments: TextSegment[] = []
-
   const cleanedText = text
     .replace(/---?\s*PAGE\s*\d+\s*---?/gi, '')
     .replace(/\[PAGE\s*\d+\]/gi, '')
@@ -38,67 +39,63 @@ function parseMarkdown(text: string): TextSegment[] {
     let content = paragraphBuffer.trim()
     if (content) {
       content = content.replace(/\s+:/g, ':')
-      segments.push(...processInlineStyles(content))
+      const parts = content.split(/(\*\*.*?\*\*)/g)
+      for (const part of parts) {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          segments.push({ text: part.slice(2, -2), style: 'bold' })
+        } else if (part.length > 0) {
+          segments.push({ text: part, style: 'normal' })
+        }
+      }
       segments.push({ text: '\n', style: 'normal' })
       paragraphBuffer = ""
     }
   }
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim()
-    if (line === '') { flushBuffer(); continue }
-
-    if (line.startsWith('#')) {
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (trimmed === '') { flushBuffer(); continue }
+    if (trimmed.startsWith('#')) {
       flushBuffer()
-      if (line.startsWith('### ')) segments.push({ text: line.substring(4), style: 'heading3' })
-      else if (line.startsWith('## ')) segments.push({ text: line.substring(3), style: 'heading2' })
-      else segments.push({ text: line.substring(2), style: 'heading1' })
-    }
-    else if (line.startsWith('- ') || line.startsWith('* ') || /^\d+\.\s/.test(line)) {
+      if (trimmed.startsWith('### ')) segments.push({ text: trimmed.substring(4), style: 'heading3' })
+      else if (trimmed.startsWith('## ')) segments.push({ text: trimmed.substring(3), style: 'heading2' })
+      else segments.push({ text: trimmed.substring(2), style: 'heading1' })
+    } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ') || /^\d+\.\s/.test(trimmed)) {
       flushBuffer()
-      const bulletContent = line.replace(/^[-*]\s|^\d+\.\s/, '')
-      segments.push({ text: bulletContent, style: 'bullet' })
-    }
-    else {
-      paragraphBuffer += (paragraphBuffer ? " " : "") + line
+      segments.push({ text: trimmed.replace(/^[-*]\s|^\d+\.\s/, ''), style: 'bullet' })
+    } else {
+      paragraphBuffer += (paragraphBuffer ? " " : "") + trimmed
     }
   }
   flushBuffer()
   return segments
 }
 
-function processInlineStyles(text: string): TextSegment[] {
-  const segments: TextSegment[] = []
-  const parts = text.split(/(\*\*.*?\*\*)/g)
+// --- MOTOR DE CONSTRUCCIÓN DEL PDF ---
 
-  for (const part of parts) {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      segments.push({ text: part.slice(2, -2), style: 'bold' })
-    } else if (part.length > 0) {
-      segments.push({ text: part, style: 'normal' })
-    }
-  }
-  return segments
-}
-
-export async function generatePDF(patientData: PatientData, results: AnalysisResult[]): Promise<void> {
-  const pdf = new jsPDF('p', 'mm', 'a4')
+/**
+ * Esta función centraliza toda la estética y contenido del reporte.
+ * Se usa tanto para descargar como para compartir.
+ */
+function buildPDFContent(pdf: jsPDF, patientData: PatientData, results: AnalysisResult[]) {
   const pageWidth = pdf.internal.pageSize.getWidth()
   const pageHeight = pdf.internal.pageSize.getHeight()
   const margin = 20
   let yPosition = margin
 
-  const addNewPageIfNeeded = (neededHeight: number) => {
-    if (yPosition + neededHeight > pageHeight - margin) {
+  const checkPage = (h: number) => {
+    if (yPosition + h > pageHeight - margin) {
       pdf.addPage()
       yPosition = margin
     }
   }
 
+  // Header
   pdf.setFontSize(18).setFont('helvetica', 'bold')
   pdf.text('REPORTE DE EVALUACIÓN PSICOMÉTRICA HTP', pageWidth / 2, yPosition, { align: 'center' })
   yPosition += 15
 
+  // Datos
   pdf.setFontSize(10).setFont('helvetica', 'bold')
   pdf.text(`PACIENTE: ${patientData.name.toUpperCase()}`, margin, yPosition)
   pdf.text(`FECHA: ${new Date().toLocaleDateString('es-ES')}`, pageWidth - margin - 40, yPosition)
@@ -110,14 +107,14 @@ export async function generatePDF(patientData: PatientData, results: AnalysisRes
   yPosition += 12
 
   for (const item of results) {
-    addNewPageIfNeeded(20)
+    checkPage(20)
     pdf.setFontSize(13).setFont('helvetica', 'bold')
     pdf.text(item.imageType.toUpperCase().replace(/-/g, ' '), margin, yPosition)
     yPosition += 8
 
     if (item.imageData) {
       const imgW = 90, imgH = 65
-      addNewPageIfNeeded(imgH + 5)
+      checkPage(imgH + 5)
       pdf.addImage(item.imageData, 'JPEG', (pageWidth - imgW) / 2, yPosition, imgW, imgH)
       yPosition += imgH + 10
     }
@@ -135,14 +132,12 @@ export async function generatePDF(patientData: PatientData, results: AnalysisRes
 
       let fontStyle = 'normal'
       if (seg.style === 'bold' || seg.style.includes('heading')) fontStyle = 'bold'
-      if (seg.style === 'italic') fontStyle = 'italic'
-
       pdf.setFont('helvetica', fontStyle).setFontSize(seg.style.includes('heading') ? 12 : 10)
 
       if (seg.style === 'bullet') {
         const bLines = pdf.splitTextToSize("• " + seg.text, maxWidth - 6)
         for (const bl of bLines) {
-          addNewPageIfNeeded(6)
+          checkPage(6)
           pdf.text(bl, margin + 6, yPosition)
           yPosition += 5.5
         }
@@ -154,7 +149,7 @@ export async function generatePDF(patientData: PatientData, results: AnalysisRes
           if (currentX + wordWidth > pageWidth - margin && word.trim() !== "") {
             yPosition += 5.5
             currentX = margin
-            addNewPageIfNeeded(6)
+            checkPage(6)
           }
           pdf.text(word, currentX, yPosition)
           currentX += wordWidth
@@ -163,42 +158,49 @@ export async function generatePDF(patientData: PatientData, results: AnalysisRes
     }
     yPosition += 4
   }
+}
 
+// --- FUNCIONES DE EXPORTACIÓN ---
+
+export async function generatePDF(patientData: PatientData, results: AnalysisResult[]): Promise<void> {
+  const pdf = new jsPDF('p', 'mm', 'a4')
+  buildPDFContent(pdf, patientData, results)
   pdf.save(`HTP_Report_${patientData.name.replace(/\s+/g, '_')}.pdf`)
 }
 
 /**
- * CORRECCIÓN PARA MÓVIL: WhatsApp
- * Usa wa.me y asignación directa para evitar bloqueos de popups.
+ * COMPARTE EL ARCHIVO PDF REAL
+ * En móvil abre el menú nativo (WhatsApp, Telegram, etc).
+ * En escritorio descarga el archivo.
  */
-export function shareWhatsApp(patientData: PatientData, summary: string): void {
-  const cleanSummary = summary.replace(/\n/g, ' ').slice(0, 600);
-  const text = encodeURIComponent(
-    `*REPORTE HTP - ${patientData.name.toUpperCase()}*\n\n${cleanSummary}...\n\n_Generado por HTP AI Analyst_`
-  );
+export async function shareWhatsApp(patientData: PatientData, results: AnalysisResult[]): Promise<void> {
+  const pdf = new jsPDF('p', 'mm', 'a4')
+  buildPDFContent(pdf, patientData, results)
 
-  // En móvil, href directo es más fiable que window.open
-  window.location.href = `https://wa.me/?text=${text}`;
+  const fileName = `Reporte_HTP_${patientData.name.replace(/\s+/g, '_')}.pdf`
+  const pdfBlob = pdf.output('blob')
+  const file = new File([pdfBlob], fileName, { type: 'application/pdf' })
+
+  // Web Share API (Mobile native)
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        files: [file],
+        title: 'Reporte Psicodiagnóstico HTP',
+        text: `Adjunto reporte HTP de ${patientData.name}`,
+      })
+    } catch (err) {
+      console.error("Error al compartir:", err)
+      pdf.save(fileName)
+    }
+  } else {
+    // Fallback escritorio: Descarga y aviso
+    alert("Para enviar por WhatsApp en escritorio, el archivo se descargará. Luego podrás adjuntarlo en WhatsApp Web.")
+    pdf.save(fileName)
+  }
 }
 
-/**
- * CORRECCIÓN PARA MÓVIL: Email
- * Usa un link temporal y saltos de línea codificados para clientes nativos.
- */
-export function shareEmail(patientData: PatientData, summary: string): void {
-  const subject = encodeURIComponent(`Reporte HTP - ${patientData.name}`);
-  // %0D%0A es el estándar para saltos de línea en mailto
-  const bodyText = encodeURIComponent(
-    `Reporte de Evaluación HTP\n\nPaciente: ${patientData.name}\nEdad: ${patientData.age}\n\nResumen:\n${summary.slice(0, 800)}...`
-  ).replace(/%0A/g, '%0D%0A');
-
-  const mailtoUrl = `mailto:?subject=${subject}&body=${bodyText}`;
-
-  // Crear un elemento invisible para disparar la acción
-  const link = document.createElement('a');
-  link.href = mailtoUrl;
-  link.target = '_self';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+export async function shareEmail(patientData: PatientData, results: AnalysisResult[]): Promise<void> {
+  // Reutilizamos el sistema de compartir nativo ya que permite elegir Email
+  await shareWhatsApp(patientData, results)
 }
