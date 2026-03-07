@@ -22,18 +22,17 @@ interface TextSegment {
 }
 
 /**
- * PARSER OPTIMIZADO: Unifica párrafos, limpia basura de la IA y 
- * evita cortes de prosa inconsistentes.
+ * PARSER REPARADO: Elimina saltos innecesarios después de ":"
+ * y unifica la prosa para que no parezca una lista vertical.
  */
 function parseMarkdown(text: string): TextSegment[] {
   const segments: TextSegment[] = []
 
-  // 1. Limpieza profunda de ruido de la IA
   const cleanedText = text
-    .replace(/---?\s*PAGE\s*\d+\s*---?/gi, '') // Elimina --- PAGE 1 ---
-    .replace(/\[PAGE\s*\d+\]/gi, '')           // Elimina [PAGE 1]
-    .replace(/\[\d+(?:,\s*\d+)*\]/g, '')      // Elimina citas tipo [34, 78]
-    .replace(/^\s*[-*_]{3,}\s*$/gm, '')       // Elimina líneas de separación
+    .replace(/---?\s*PAGE\s*\d+\s*---?/gi, '')
+    .replace(/\[PAGE\s*\d+\]/gi, '')
+    .replace(/\[\d+(?:,\s*\d+)*\]/g, '')      // Limpia citas [12, 14]
+    .replace(/^\s*[-*_]{3,}\s*$/gm, '')
     .replace(/\r\n/g, '\n')
 
   const lines = cleanedText.split('\n')
@@ -41,8 +40,10 @@ function parseMarkdown(text: string): TextSegment[] {
 
   const flushBuffer = () => {
     if (paragraphBuffer.trim()) {
+      // PROCESO ESPECIAL: Si el buffer termina en ":" o tiene ":" cerca del inicio, 
+      // nos aseguramos de que lo que sigue no se separe.
       segments.push(...processInlineStyles(paragraphBuffer.trim()))
-      segments.push({ text: '\n', style: 'normal' }) // Marcador de fin de párrafo
+      segments.push({ text: '\n', style: 'normal' })
       paragraphBuffer = ""
     }
   }
@@ -55,20 +56,22 @@ function parseMarkdown(text: string): TextSegment[] {
       continue
     }
 
-    // Detectar estructuras que NO son párrafos (Headers y Bullets)
-    if (line.startsWith('#') || line.startsWith('- ') || line.startsWith('* ') || /^\d+\.\s/.test(line)) {
+    // 1. Detectar Headers (estos siempre limpian el buffer)
+    if (line.startsWith('#')) {
       flushBuffer()
-
       if (line.startsWith('### ')) segments.push({ text: line.substring(4), style: 'heading3' })
       else if (line.startsWith('## ')) segments.push({ text: line.substring(3), style: 'heading2' })
-      else if (line.startsWith('# ')) segments.push({ text: line.substring(2), style: 'heading1' })
-      else {
-        // Normalizar bullets
-        const bulletContent = line.replace(/^[-*]\s|^\d+\.\s/, '')
-        segments.push({ text: bulletContent, style: 'bullet' })
-      }
-    } else {
-      // Es parte de un párrafo: lo unimos con un espacio
+      else segments.push({ text: line.substring(2), style: 'heading1' })
+    }
+    // 2. Detectar Listas/Bullets
+    else if (line.startsWith('- ') || line.startsWith('* ') || /^\d+\.\s/.test(line)) {
+      flushBuffer()
+      const bulletContent = line.replace(/^[-*]\s|^\d+\.\s/, '')
+      segments.push({ text: bulletContent, style: 'bullet' })
+    }
+    // 3. TEXTO NORMAL (PROSA): Aquí es donde evitamos el salto tras los ":"
+    else {
+      // Si la línea anterior terminaba en ":" o esta línea parece la continuación de una etiqueta
       paragraphBuffer += (paragraphBuffer ? " " : "") + line
     }
   }
@@ -79,19 +82,14 @@ function parseMarkdown(text: string): TextSegment[] {
 
 function processInlineStyles(text: string): TextSegment[] {
   const segments: TextSegment[] = []
-  // Regex simplificada para capturar negritas (prioritario)
+  // Buscamos negritas pero mantenemos los dos puntos pegados al texto si existen
   const parts = text.split(/(\*\*.*?\*\*)/g)
 
   for (const part of parts) {
     if (part.startsWith('**') && part.endsWith('**')) {
       segments.push({ text: part.slice(2, -2), style: 'bold' })
     } else if (part.length > 0) {
-      // Manejo simple de itálicas dentro de lo normal
-      if (part.startsWith('*') && part.endsWith('*')) {
-        segments.push({ text: part.slice(1, -1), style: 'italic' })
-      } else {
-        segments.push({ text: part, style: 'normal' })
-      }
+      segments.push({ text: part, style: 'normal' })
     }
   }
   return segments
@@ -104,7 +102,7 @@ export async function generatePDF(
   const pdf = new jsPDF('p', 'mm', 'a4')
   const pageWidth = pdf.internal.pageSize.getWidth()
   const pageHeight = pdf.internal.pageSize.getHeight()
-  const margin = 20 // Margen más amplio y profesional
+  const margin = 20
   let yPosition = margin
 
   const addNewPageIfNeeded = (neededHeight: number) => {
@@ -116,101 +114,116 @@ export async function generatePDF(
     return false
   }
 
-  // Encabezado del Reporte
+  // --- CABECERA ---
   pdf.setFontSize(18).setFont('helvetica', 'bold')
-  pdf.text('REPORTE DE EVALUACIÓN PSICOMÉTRICA HTP', pageWidth / 2, yPosition, { align: 'center' })
+  pdf.text('REPORTE DE EVALUACIÓN HTP', pageWidth / 2, yPosition, { align: 'center' })
   yPosition += 15
 
-  // Datos del Paciente en bloque
   pdf.setFontSize(10).setFont('helvetica', 'bold')
-  pdf.text('DATOS DEL PACIENTE', margin, yPosition)
+  pdf.text(`PACIENTE: ${patientData.name.toUpperCase()}`, margin, yPosition)
+  pdf.text(`FECHA: ${new Date().toLocaleDateString('es-ES')}`, pageWidth - margin - 40, yPosition)
   yPosition += 6
   pdf.setFont('helvetica', 'normal')
-  pdf.text(`Nombre: ${patientData.name}`, margin, yPosition)
-  pdf.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, pageWidth - margin - 40, yPosition)
-  yPosition += 5
   pdf.text(`Edad: ${patientData.age} años | Sexo: ${patientData.sex}`, margin, yPosition)
-  yPosition += 10
+  yPosition += 8
 
-  pdf.setDrawColor(180).line(margin, yPosition, pageWidth - margin, yPosition)
+  pdf.setDrawColor(200).line(margin, yPosition, pageWidth - margin, yPosition)
   yPosition += 12
 
   for (const item of results) {
-    addNewPageIfNeeded(40)
+    addNewPageIfNeeded(60)
 
-    // Título de Sección
-    pdf.setFontSize(14).setFont('helvetica', 'bold')
-    const title = item.imageType === 'htp-complete' ? 'ANÁLISIS INTEGRAL HTP' : `ANÁLISIS: ${item.imageType.toUpperCase()}`
-    pdf.text(title, margin, yPosition)
+    pdf.setFontSize(13).setFont('helvetica', 'bold')
+    pdf.text(item.imageType.toUpperCase().replace(/-/g, ' '), margin, yPosition)
     yPosition += 8
 
-    // Imagen (si existe)
     if (item.imageData) {
       try {
-        const imgW = 100, imgH = 75
+        const imgW = 80, imgH = 60 // Un poco más pequeñas para ahorrar espacio
         addNewPageIfNeeded(imgH + 10)
         pdf.addImage(item.imageData, 'JPEG', (pageWidth - imgW) / 2, yPosition, imgW, imgH)
-        yPosition += imgH + 12
+        yPosition += imgH + 10
       } catch (e) { console.error(e) }
     }
 
     const segments = parseMarkdown(item.result)
     const maxWidth = pageWidth - (margin * 2)
 
-    // RENDERIZADO DE BLOQUES
+    // BUFFER PARA LÍNEAS DE UN MISMO PÁRRAFO
+    let currentLineX = margin
+
     for (const seg of segments) {
       if (seg.text === '\n') {
-        yPosition += 4 // Espacio entre párrafos
+        yPosition += 6 // Salto de párrafo real
+        currentLineX = margin
         continue
       }
 
-      // Configuración de Estilos
+      // Estilos
       let fontSize = 10
       let fontStyle = 'normal'
       let indent = 0
-      let prefix = ""
 
-      switch (seg.style) {
-        case 'heading1': fontSize = 14; fontStyle = 'bold'; yPosition += 4; break
-        case 'heading2': fontSize = 12; fontStyle = 'bold'; yPosition += 2; break
-        case 'heading3': fontSize = 11; fontStyle = 'bold'; break
-        case 'bold': fontStyle = 'bold'; break
-        case 'italic': fontStyle = 'italic'; break
-        case 'bullet': indent = 6; prefix = "• "; break
+      if (seg.style.includes('heading')) {
+        fontSize = seg.style === 'heading1' ? 14 : seg.style === 'heading2' ? 12 : 11
+        fontStyle = 'bold'
+        yPosition += 2
+      } else if (seg.style === 'bold') {
+        fontStyle = 'bold'
+      } else if (seg.style === 'bullet') {
+        indent = 6
       }
 
       pdf.setFontSize(fontSize).setFont('helvetica', fontStyle)
 
-      // Ajuste de texto al ancho
-      const lines = pdf.splitTextToSize(prefix + seg.text, maxWidth - indent)
-
-      for (const line of lines) {
-        addNewPageIfNeeded(6)
-        pdf.text(line, margin + indent, yPosition)
-        yPosition += 5.5 // Interlineado
+      if (seg.style === 'bullet') {
+        const bulletLines = pdf.splitTextToSize("• " + seg.text, maxWidth - indent)
+        for (const bl of bulletLines) {
+          addNewPageIfNeeded(6)
+          pdf.text(bl, margin + indent, yPosition)
+          yPosition += 5.5
+        }
+        yPosition += 1 // Mini espacio entre bullets
+      } else if (seg.style.includes('heading')) {
+        const hLines = pdf.splitTextToSize(seg.text, maxWidth)
+        for (const hl of hLines) {
+          addNewPageIfNeeded(7)
+          pdf.text(hl, margin, yPosition)
+          yPosition += 6
+        }
+      } else {
+        // TEXTO FLUIDO (Inline)
+        // Aquí tratamos de imprimir el segmento en la misma línea si cabe
+        const words = seg.text.split(' ')
+        for (const word of words) {
+          const wordWidth = pdf.getTextWidth(word + " ")
+          if (currentLineX + wordWidth > pageWidth - margin) {
+            yPosition += 5.5
+            currentLineX = margin
+            addNewPageIfNeeded(6)
+          }
+          pdf.text(word + " ", currentLineX, yPosition)
+          currentLineX += wordWidth
+        }
       }
     }
-
-    yPosition += 10 // Separación entre resultados de imágenes
+    yPosition += 6
   }
 
-  // Pie de página ético
-  pdf.setFontSize(8).setFont('helvetica', 'italic').setTextColor(100)
-  const footerText = "Nota: Este reporte es una hipótesis diagnóstica generada por IA y debe ser validada por un psicólogo colegiado."
-  pdf.text(footerText, pageWidth / 2, pageHeight - 10, { align: 'center' })
+  // Footer
+  pdf.setFontSize(8).setFont('helvetica', 'italic').setTextColor(120)
+  pdf.text("Uso exclusivo profesional - Generado por HTP AI Analyst", pageWidth / 2, pageHeight - 10, { align: 'center' })
 
-  const fileName = `HTP_Report_${patientData.name.replace(/\s+/g, '_')}.pdf`
-  pdf.save(fileName)
+  pdf.save(`Reporte_HTP_${patientData.name}.pdf`)
 }
 
-// WhatsApp y Email (se mantienen igual pero con mejor encoding)
 export function shareWhatsApp(patientData: PatientData, summary: string): void {
-  const text = encodeURIComponent(`*REPORTE HTP - ${patientData.name}*\n\n${summary.slice(0, 500)}...\n\n_Generado por HTP AI Analyst_`)
+  const text = encodeURIComponent(`*REPORTE HTP - ${patientData.name}*\n\n${summary.slice(0, 300)}...`)
   window.open(`https://wa.me/?text=${text}`, '_blank')
 }
 
 export function shareEmail(patientData: PatientData, summary: string): void {
   const subject = encodeURIComponent(`Reporte HTP - ${patientData.name}`)
-  const body = encodeURIComponent(`Paciente: ${patientData.name}\n\n${summary}\n\nGenerado por HTP AI Analyst`)
+  const body = encodeURIComponent(`Reporte adjunto de ${patientData.name}\n\n${summary}`)
   window.location.href = `mailto:?subject=${subject}&body=${body}`
 }
