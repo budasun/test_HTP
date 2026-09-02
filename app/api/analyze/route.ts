@@ -114,7 +114,9 @@ async function analyzeWithModel(
   const ageNum = parseInt(patientData.age) || 25
   const ageCategory = getAgeCategory(ageNum)
 
-  const prompt = `${contextPrompt}
+  const prompt = `IMPORTANTE: Responde COMPLETAMENTE en español. Todo el texto de tu respuesta, incluyendo razonamiento, análisis y conclusiones, DEBE estar en español. NO uses inglés en ninguna parte de tu respuesta.
+
+${contextPrompt}
 
 ${KNOWLEDGE_BASE_SECTION}
 
@@ -291,6 +293,7 @@ otro contenido
         messages,
         max_tokens: 5000,
         temperature: 0.5,
+        reasoning_effort: 'none',
       }),
     },
     TIMEOUT_MS
