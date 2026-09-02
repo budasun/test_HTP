@@ -410,6 +410,7 @@ export default function Home() {
             originalAnalysis={result.result}
             patientData={patientData}
             context={result.context}
+            imageData={result.imageData}
           />
         )}
       </div>

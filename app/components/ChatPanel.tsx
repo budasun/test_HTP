@@ -21,9 +21,10 @@ interface ChatPanelProps {
   originalAnalysis: string
   patientData: PatientData
   context: string
+  imageData?: string
 }
 
-export default function ChatPanel({ originalAnalysis, patientData, context }: ChatPanelProps) {
+export default function ChatPanel({ originalAnalysis, patientData, context, imageData }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -128,7 +129,8 @@ export default function ChatPanel({ originalAnalysis, patientData, context }: Ch
       originalAnalysis,
       refinements,
       context,
-      lastAssistantMessage
+      lastAssistantMessage,
+      imageData
     )
   }
 

@@ -33,6 +33,8 @@ function parseMarkdown(text: string): TextSegment[] {
     .replace(/\[\d+(?:,\s*\d+)*\]/g, '')
     .replace(/^\s*[-*_]{3,}\s*$/gm, '')
     .replace(/\r\n/g, '\n')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
 
   const lines = cleanedText.split('\n')
   let paragraphBuffer = ""
@@ -40,7 +42,8 @@ function parseMarkdown(text: string): TextSegment[] {
   const flushBuffer = () => {
     let content = paragraphBuffer.trim()
     if (content) {
-      content = content.replace(/\s+:/g, ':') // Une ":" a la palabra anterior
+      content = content.replace(/\s+:/g, ':')
+      content = content.replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1')
       const parts = content.split(/(\*\*.*?\*\*)/g)
       for (const part of parts) {
         if (part.startsWith('**') && part.endsWith('**')) {
@@ -60,12 +63,12 @@ function parseMarkdown(text: string): TextSegment[] {
 
     if (trimmed.startsWith('#')) {
       flushBuffer()
-      if (trimmed.startsWith('### ')) segments.push({ text: trimmed.substring(4), style: 'heading3' })
-      else if (trimmed.startsWith('## ')) segments.push({ text: trimmed.substring(3), style: 'heading2' })
-      else segments.push({ text: trimmed.substring(2), style: 'heading1' })
+      if (trimmed.startsWith('### ')) segments.push({ text: trimmed.substring(4).replace(/\*{1,2}/g, ''), style: 'heading3' })
+      else if (trimmed.startsWith('## ')) segments.push({ text: trimmed.substring(3).replace(/\*{1,2}/g, ''), style: 'heading2' })
+      else segments.push({ text: trimmed.substring(2).replace(/\*{1,2}/g, ''), style: 'heading1' })
     } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ') || /^\d+\.\s/.test(trimmed)) {
       flushBuffer()
-      segments.push({ text: trimmed.replace(/^[-*]\s|^\d+\.\s/, ''), style: 'bullet' })
+      segments.push({ text: trimmed.replace(/^[-*]\s|^\d+\.\s/, '').replace(/\*{1,2}/g, ''), style: 'bullet' })
     } else {
       paragraphBuffer += (paragraphBuffer ? " " : "") + trimmed
     }
@@ -196,14 +199,15 @@ export async function generatePDF(patientData: PatientData, results: AnalysisRes
 
 /**
  * GENERADOR DE PDF INTEGRADO:
- * Incluye análisis original + observaciones del chat + versión final integrada.
+ * Incluye imagen + análisis original + observaciones del chat + versión final integrada.
  */
 export async function generateIntegratedPDF(
   patientData: PatientData,
   originalAnalysis: string,
   refinements: string[],
   context: string,
-  finalAnalysis: string
+  finalAnalysis: string,
+  imageData?: string
 ): Promise<void> {
   const pdf = new jsPDF('p', 'mm', 'a4')
   const pageWidth = pdf.internal.pageSize.getWidth()
@@ -245,6 +249,19 @@ export async function generateIntegratedPDF(
   pdf.setFont('helvetica', 'normal')
   pdf.text(`Edad: ${patientData.age} anos | Sexo: ${patientData.sex}`, margin + 5, yPosition + 14)
   yPosition += 30
+
+  // --- IMAGEN DEL DIBUJO ---
+  if (imageData) {
+    const imgW = 100
+    const imgH = 75
+    checkPage(imgH + 10)
+    try {
+      pdf.addImage(imageData, 'JPEG', (pageWidth - imgW) / 2, yPosition, imgW, imgH)
+      yPosition += imgH + 12
+    } catch (e) {
+      console.warn("No se pudo cargar la imagen en el PDF", e)
+    }
+  }
 
   // --- SECCION 1: ANALISIS ORIGINAL ---
   checkPage(30)
