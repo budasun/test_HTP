@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import htpKnowledgeBase from '@/data/htp_knowledge_base.json'
 
 const MODELS = [
-  'meta-llama/llama-4-scout-17b-16e-instruct',
+  'qwen/qwen3.6-27b',
+  'qwen/qwen3.8-27b',
 ]
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
@@ -259,7 +260,7 @@ otro contenido
 
 **NOTA FINAL**: Este analisis se basa en el Manual de Interpretacion H.T.P. (IA) y debe ser validado por un profesional de la psicologia clinica. Los indicadores aislados no constituyen diagnostico; la interpretacion requiere convergencia de multiples senales y consideracion del contexto del paciente.`
 
-  const isVisionModel = model.includes('vision') || model.includes('llama-4-scout') || model.includes('llama-4')
+  const isVisionModel = model.includes('vision') || model.includes('qwen3.6') || model.includes('qwen3.8')
   const messages: Array<{ role: string; content: string | Array<{ type: string; text?: string; image_url?: { url: string } }> }> = []
 
   if (isVisionModel && imageData) {
