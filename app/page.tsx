@@ -4,6 +4,7 @@ import { useState, useRef } from 'react'
 import NextImage from 'next/image'
 import ReactMarkdown from 'react-markdown'
 import { generatePDF } from '@/utils/pdfGenerator'
+import ChatPanel from '@/app/components/ChatPanel'
 
 interface PatientData {
   name: string
@@ -402,6 +403,14 @@ export default function Home() {
               </div>
             </div>
           </div>
+        )}
+
+        {result && (
+          <ChatPanel
+            originalAnalysis={result.result}
+            patientData={patientData}
+            context={result.context}
+          />
         )}
       </div>
     </main>
