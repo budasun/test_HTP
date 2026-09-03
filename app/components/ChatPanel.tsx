@@ -28,6 +28,7 @@ export default function ChatPanel({ originalAnalysis, patientData, context, imag
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isEnriching, setIsEnriching] = useState(false)
   const [isOpen, setIsOpen] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -134,6 +135,53 @@ export default function ChatPanel({ originalAnalysis, patientData, context, imag
     )
   }
 
+  const handleEnrich = async () => {
+    if (isEnriching) return
+
+    setIsEnriching(true)
+
+    const currentAnalysis = messages.length > 0
+      ? messages.filter(msg => msg.role === 'assistant').pop()?.content || originalAnalysis
+      : originalAnalysis
+
+    try {
+      const response = await fetch('/api/enrich', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          originalAnalysis: currentAnalysis,
+          context,
+          patientData,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al enriquecer el analisis')
+      }
+
+      const enrichMessage: ChatMessage = {
+        id: generateId(),
+        role: 'assistant',
+        content: data.response,
+        timestamp: new Date(),
+      }
+
+      setMessages(prev => [...prev, enrichMessage])
+    } catch {
+      const errorMessage: ChatMessage = {
+        id: generateId(),
+        role: 'assistant',
+        content: 'Lo siento, hubo un error al enriquecer el analisis. Por favor, intenta de nuevo.',
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsEnriching(false)
+    }
+  }
+
   const contextLabel = context === 'clinica' ? 'Clinica' :
                        context === 'laboral' ? 'Laboral' : 'Forense'
 
@@ -172,6 +220,13 @@ export default function ChatPanel({ originalAnalysis, patientData, context, imag
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={handleEnrich}
+            disabled={isEnriching}
+            className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 disabled:bg-slate-500 disabled:cursor-not-allowed rounded-lg text-sm font-medium transition"
+          >
+            {isEnriching ? 'Enriqueciendo...' : 'Enriquecer'}
+          </button>
           <button
             onClick={handleDownloadPDF}
             disabled={messages.length === 0}

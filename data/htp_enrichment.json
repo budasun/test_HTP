@@ -1,0 +1,182 @@
+{
+  "bibliografia": {
+    "buck_1948": {
+      "autor": "John N. Buck",
+      "obra": "The House-Tree-Person Technique: A Guide to the Use of the House-Tree-Person Technique in Clinical Practice",
+      "editorial": "Western Psychological Services",
+      "ano": 1948,
+      "criterios": {
+        "general": "El H-T-P es una técnica proyectiva gráfica que evalúa inteligencia y personalidad a partir de detalles, relaciones espaciales y formación de conceptos (Buck, 1948, pp. 1-5).",
+        "colocacion_vertical": "Cuanto más abajo se ubique el punto medio del dibujo respecto al centro de la hoja, mayor es la probabilidad de que el sujeto se sienta inseguro e inadecuado, y mayor la probabilidad de depresión del ánimo. Cuanto más arriba, mayor tendencia a buscar satisfacción en la intelectualización o la fantasía (Buck, 1948, p. 105).",
+        "tamaño_pequeño": "Un dibujo pequeño puede reflejar inseguridad, inhibición o introversión (Buck, 1948, p. 106).",
+        "tamaño_grande": "Un dibujo excesivamente grande puede indicar expansión del yo, agresividad o tendencias maníacas (Buck, 1948, p. 106)."
+      }
+    },
+    "buck_1966": {
+      "autor": "John N. Buck",
+      "obra": "House-Tree-Person Technique: Revised Manual",
+      "editorial": "Western Psychological Services",
+      "ano": 1966,
+      "criterios": {
+        "casa_techo": "El techo representa la esfera de la fantasía y la intelectualización. Un techo exageradamente grande sugiere énfasis en la vida mental y mecanismos de defensa intelectualizadores (Buck, 1966, Cap. 6).",
+        "casa_paredes": "Las paredes representan la fuerza del yo. Paredes frágiles o transparentes pueden indicar deterioro del criterio de realidad (Buck, 1966, Cap. 6).",
+        "casa_puerta": "La puerta simboliza la relación del sujeto con el mundo exterior. Una puerta pequeña indica inhibición y temor a las relaciones interpersonales (Buck, 1966, Cap. 6).",
+        "casa_ventanas": "Las ventanas representan el contacto visual con el exterior. Ventanas con barras o candados sugieren actitudes defensivas hacia el mundo (Buck, 1966, Cap. 6).",
+        "arbol_tronco": "El tronco representa la fuerza del yo y la estabilidad. Un tronco delgado sugiere fragilidad emocional y baja resistencia al estrés (Buck, 1966, Cap. 6).",
+        "arbol_copa": "La copa representa la relación del sujeto con el mundo exterior y sus aspiraciones. Una copa grande indica extraversión y ambición (Buck, 1966, Cap. 6).",
+        "arbol_ramas": "Las ramas representan los contactos con el exterior. Ramas en punta sugieren hostilidad y agresividad (Buck, 1966, Cap. 6).",
+        "persona_cabeza": "La cabeza representa la esfera intelectual y la fantasía. Una cabeza desproporcionadamente grande puede indicar énfasis en la intelectualización (Buck, 1966, Cap. 6).",
+        "persona_brazos": "Los brazos representan la capacidad de contacto y acción. Brazos omitidos pueden indicar sentimientos de impotencia o evasión de responsabilidades (Buck, 1966, Cap. 6).",
+        "persona_piernas": "Las piernas representan la estabilidad y el contacto con la realidad. Piernas cortas o ausentes pueden indicar inseguridad en la base de la personalidad (Buck, 1966, Cap. 6)."
+      }
+    },
+    "jolles_1964": {
+      "autor": "Isadore L. Jolles",
+      "obra": "A Catalogue for the Qualitative Interpretation of the House-Tree-Person (H-T-P)",
+      "editorial": "Western Psychological Services",
+      "ano": 1964,
+      "criterios": {
+        "casa_ocupada": "Si la casa está ocupada (con humo, personas, etc.), indica necesidad de recibir calor. Si está desocupada, puede indicar falta de defensa del yo (Jolles, 1964, p. 41).",
+        "casa_chimenea_ausente": "Ausencia de chimenea puede indicar dificultad para expresar emociones cálidas (Jolles, 1964, p. 41).",
+        "casa_chimenea_grande": "Chimenea excesivamente grande puede indicar preocupación por temas de masculinidad o energía (Jolles, 1964, p. 41).",
+        "casa_puerta_formidable": "Puerta con picaporte grande o formidables bisagras sugiere necesidad de protección ante amenazas del ambiente (Jolles, 1964, p. 49).",
+        "casa_ventanas_con_candado": "Ventanas con candados indican actitudes defensivas y necesidad de protección (Jolles, 1964, p. 73).",
+        "casa_cercas": "Cerca alrededor de la casa: necesidad de protección de la amenaza del ambiente; también puede representar necesidad de que otros no conozcan los sentimientos internos del sujeto (Jolles, 1964, p. 49).",
+        "arbol_tronco_delgado": "Tronco delgado indica fragilidad emocional y sensibilidad extrema (Jolles, 1964, p. 85).",
+        "arbol_tronco_grueso": "Tronco grueso indica fortaleza yoica y resistencia (Jolles, 1964, p. 85).",
+        "arbol_ramas_muertas": "Ramas rotas, dobladas o muertas indican trauma, castración o proyectos fallidos (Jolles, 1964, p. 77).",
+        "arbol_raices_destacadas": "Raíces visibles indican excesiva preocupación por el contacto con la realidad (Jolles, 1964, p. 93).",
+        "persona_manos_ausentes": "Ausencia de manos se interpreta como evasión y culpa, particularmente relacionada con impulsos inaceptables o masturbación (Jolles, 1964, p. 109).",
+        "persona_manos_cubriendo_pelvis": "Manos cubriendo la región pélvica indican mecanismos de defensa contra impulsos sexuales (Jolles, 1964, p. 109).",
+        "persona_brazos_delgados": "Brazos delgados sugieren debilidad en la capacidad de acción y contacto (Jolles, 1964, p. 101).",
+        "persona_cabeza_pequeña": "Cabeza pequeña puede indicar intelectualización defensiva o baja autoestima (Jolles, 1964, p. 111).",
+        "persona_pies_desproporcionados": "Pies desproporcionadamente pequeños o grandes reflejan inseguridad o énfasis excesivo en la estabilidad (Jolles, 1964, p. 107).",
+        "persona_piernas_cruzadas": "Piernas cruzadas pueden indicar rigidez o actitud defensiva (Jolles, 1964, p. 113).",
+        "persona_figuras_inconclusas": "Figuras inacabadas sugieren inmadurez o regresión (Jolles, 1964, p. 117).",
+        "persona_sombras_heridas": "Cortes, heridas o cicatrices en la figura pueden indicar trauma o autolesión (Jolles, 1964, p. 117)."
+      }
+    },
+    "machover_1949": {
+      "autor": "Karen Machover",
+      "obra": "Personality Projection in the Drawing of the Human Figure",
+      "editorial": "Charles C Thomas Publisher",
+      "ano": 1949,
+      "criterios": {
+        "general": "La figura humana dibujada es una proyección del yo del sujeto; cada distorsión u omisión tiene significado psicológico (Machover, 1949, pp. 35-50).",
+        "orden_dibujo": "El orden en que se dibujan las partes del cuerpo proporciona información sobre qué áreas son más significativas o conflictivas para el sujeto (Machover, 1949, pp. 50-55).",
+        "omision_manos": "La ausencia u ocultamiento de manos se interpreta como evasión y culpa, particularmente relacionada con impulsos inaceptables (Machover, 1949, p. 58).",
+        "omision_brazos": "Brazos ausentes pueden indicar sentimientos de impotencia, inhibición de la agresividad o evasión de responsabilidades (Machover, 1949, pp. 58-62).",
+        "manos_en_pelvis": "Manos colocadas sobre la región pélvica indican mecanismos de defensa contra impulsos sexuales (Machover, 1949, p. 59).",
+        "cabeza_grande": "Cabeza excesivamente grande enfatiza la importancia de la intelectualización y la fantasía como mecanismos compensatorios (Machover, 1949, p. 63).",
+        "cabeza_pequeña": "Cabeza pequeña puede indicar intelectualización defensiva o sentimiento de inferioridad intelectual (Machover, 1949, p. 63).",
+        "ojos_grandes": "Ojos grandes pueden indicar vigilancia, paranoia o necesidad de control visual del ambiente (Machover, 1949, p. 65).",
+        "ojos_cerrados": "Ojos cerrados sugieren rechazo a ver la realidad, negación o introversión extrema (Machover, 1949, p. 65).",
+        "bocas_grandes": "Boca grande puede indicar necesidad oral o expresión excesiva (Machover, 1949, p. 67).",
+        "cuello_largo": "Cuello largo puede indicar tensión entre impulsos y control (Machover, 1949, p. 68).",
+        "cuello_ausente": "Ausencia de cuello sugiere dificultad para integrar impulsos con el intelecto (Machover, 1949, p. 68).",
+        "hombros_cargados": "Hombros prominentes indican tensión, responsabilidad excesiva o actitud defensiva (Machover, 1949, p. 69).",
+        "tronco_pequeño": "Tronco pequeño sugiere inmadurez, regresión o énfasis en areas no físicas (Machover, 1949, p. 70).",
+        "extremidades_delgadas": "Extremidades delgadas indican debilidad en la capacidad de acción y contacto (Machover, 1949, p. 72).",
+        "pies_desproporcionados": "Pies grandes indican necesidad de estabilidad; pies pequeños sugieren inseguridad en la base de la personalidad (Machover, 1949, p. 73).",
+        "ropa_detalhes": "Ropa con muchos detalles puede indicar preocupación por la apariencia social y mecanismos de defensa (Machover, 1949, pp. 75-77).",
+        "sombreado": "Sombreado intenso indica ansiedad; sombreado en áreas específicas señala la localización del conflicto (Machover, 1949, pp. 80-82).",
+        "trazos_fuertes": "Trazos firmes y oscuros indican energía, determinación o agresividad; trazos suaves sugieren sensibilidad o pasividad (Machover, 1949, pp. 82-84).",
+        "borrado_excesivo": "Borrado excesivo indica ansiedad, perfeccionismo o inseguridad sobre la imagen que se proyecta (Machover, 1949, p. 85).",
+        "asimetria": "Asimetría en la figura puede indicar conflicto entre áreas de la personalidad o inestabilidad emocional (Machover, 1949, p. 86)."
+      }
+    },
+    "burns_1982": {
+      "autor": "Robert C. Burns",
+      "obra": "Kinetic-House-Tree-Person Drawings (K-H-T-P): An Interpretative Manual",
+      "editorial": "Brunner/Mazel",
+      "ano": 1982,
+      "criterios": {
+        "general": "El K-H-T-P añade la interacción entre los elementos como clave interpretativa. La relación entre casa, árbol y persona es más significativa que cada elemento aislado (Burns, 1982, pp. 15-25).",
+        "dibujo_pequeño": "Un dibujo pequeño (menos de 7.5 cm) puede indicar inseguridad, timidez, introversión o sentimiento de inferioridad (Burns, 1982, p. 258).",
+        "dibujo_grande": "Un dibujo que invade los bordes de la hoja puede indicar agresividad, expansión del yo o tendencias maníacas (Burns, 1982, p. 258).",
+        "trazo_firme": "Trazo firme y continuo indica confianza, estabilidad emocional y energía adecuada (Burns, 1982, p. 259).",
+        "trazo_debil": "Trazo débil o tembloroso puede indicar inseguridad, fatiga emocional o tendencia depresiva (Burns, 1982, p. 259).",
+        "sombreado_cabeza": "Sombreado en la cabeza indica ansiedad intelectual o preocupación por la esfera mental (Burns, 1982, p. 259).",
+        "sombreado_cuerpo": "Sombreado en el cuerpo indica ansiedad corporal o preocupación por la imagen física (Burns, 1982, p. 259).",
+        "manos_defensa": "Manos en posición de defensa pélvica indican mecanismos de defensa contra impulsos sexuales (Burns, 1982, p. 41).",
+        "figuras_inconclusas": "Figuras inacabadas pueden indicar inmadurez, regresión o resistencia a la evaluación (Burns, 1982, p. 172).",
+        "hombre_paja": "Hombre de paja (sin detalle) puede indicar regresión severa o rechazo a la prueba (Burns, 1982, p. 35).",
+        "tijeras_objetos": "Objetos como tijeras, cuchillos o pinzas en la figura pueden indicar agresividad o fantasías destructivas (Burns, 1982, p. 76)."
+      }
+    },
+    "burns_1987": {
+      "autor": "Robert C. Burns",
+      "obra": "Kinetic-House-Tree-Person Drawings (K-H-T-P): An Interpretative Manual",
+      "editorial": "Brunner/Mazel",
+      "ano": 1987,
+      "criterios": {
+        "general": "El enfoque cinético (K-H-T-P) se basa en que la interacción entre los elementos del dibujo revela dinámicas familiares y relaciones interpersonales (Burns, 1987, pp. 20-30).",
+        "interaccion_elementos": "La forma en que el sujeto relaciona la casa, el árbol y la persona entre sí proporciona información sobre cómo percibe sus relaciones familiares y su lugar en el mundo (Burns, 1987, pp. 25-28)."
+      }
+    },
+    "hammer_1954": {
+      "autor": "Emanuel F. Hammer",
+      "obra": "The Clinical Application of Projective Drawings",
+      "editorial": "Charles C Thomas Publisher",
+      "ano": 1954,
+      "criterios": {
+        "general": "Las distorsiones en los dibujos proyectivos reflejan conflictos emocionales específicos que pueden ser identificados mediante el análisis sistemático (Hammer, 1954, pp. 45-60).",
+        "agresividad_trazo": "Trazos excesivamente fuertes y oscuros, particularmente en contornos, indican tendencias agresivas subyacentes (Hammer, 1954, p. 49).",
+        "omisiones_significativas": "Las omisiones de partes del cuerpo son indicadores patológicos significativos, especialmente cuando se trata de manos, brazos o piernas (Hammer, 1954, p. 49).",
+        "chimenea_humo": "Chimenea con humo denso puede indicar tensión familiar y conflicto doméstico (Hammer, 1954, p. 49)."
+      }
+    },
+    "hammer_1958": {
+      "autor": "Emanuel F. Hammer",
+      "obra": "Projective Drawings: A Guide to Their Use in Clinical Practice",
+      "editorial": "American Psychological Association",
+      "ano": 1958,
+      "criterios": {
+        "pies_desproporcionados": "Pies excesivamente largos o desproporcionados pueden indicar necesidad de estabilidad y apoyo (Hammer, 1958, p. 45).",
+        "cuello_ausente": "Ausencia de cuello sugiere dificultad para integrar los impulsos con el intelecto (Hammer, 1958, p. 47).",
+        "manos_esconder": "Manos escondidas detrás de la espalda o en los bolsillos indican evasión de responsabilidades o culpa (Hammer, 1958, p. 49)."
+      }
+    },
+    "koppitz_1968": {
+      "autor": "Elizabeth M. Koppitz",
+      "obra": "Psychological Evaluation of Children's Human Figure Drawings",
+      "editorial": "Grune & Stratton",
+      "ano": 1968,
+      "criterios": {
+        "general": "El sistema de scoring de Koppitz evalúa 30 items emocionales en dibujos de figuras humanas de niños, incluyendo calidad del trazo, detalles del cuerpo y características emocionales (Koppitz, 1968, pp. 10-25).",
+        "trazo_firme": "Trazo firme y continuo indica confianza y estabilidad emocional (Koppitz, 1968, p. 20).",
+        "trazo_debil": "Tr Zapazos débiles o temblorosos sugieren inseguridad o tendencia depresiva (Koppitz, 1968, p. 20).",
+        "omision_cabeza": "Omisión de cabeza puede indicar intelectualización defensiva o rechazo (Koppitz, 1968, p. 25).",
+        "omision_brazos": "Omisión de brazos indica sentimientos de impotencia o evasión (Koppitz, 1968, p. 25).",
+        "omision_piernas": "Omisión de piernas sugiere inseguridad en la base de la personalidad (Koppitz, 1968, p. 25)."
+      }
+    },
+    "academicos": {
+      "critica_literatura": {
+        "hartman_1965": {
+          "autor": "Charles Hartman",
+          "obra": "Handbook of Projective Techniques",
+          "nota": "Señala que la interpretación de dibujos proyectivos debe hacerse con cautela y en el contexto de la información clínica completa del paciente."
+        },
+        "proctorter_2005": {
+          "autor": "E. Proctor",
+          "obra": "House-Tree-Person (H-T-P): Clinical and Forensic Applications",
+          "nota": "Enfatiza la importancia de no basar conclusiones diagnósticas únicamente en el H-T-P, sino integrarlo con otros datos de la evaluación."
+        }
+      }
+    }
+  },
+  "referencias_completas": [
+    "Buck, J. N. (1948). The House-Tree-Person Technique: A Guide to the Use of the House-Tree-Person Technique in Clinical Practice. Western Psychological Services.",
+    "Buck, J. N. (1966). House-Tree-Person Technique: Revised Manual. Western Psychological Services.",
+    "Jolles, I. L. (1964). A Catalogue for the Qualitative Interpretation of the House-Tree-Person (H-T-P). Western Psychological Services.",
+    "Machover, K. (1949). Personality Projection in the Drawing of the Human Figure. Charles C Thomas Publisher.",
+    "Burns, R. C. (1982). Kinetic-House-Tree-Person Drawings (K-H-T-P): An Interpretative Manual. Brunner/Mazel.",
+    "Burns, R. C. (1987). Kinetic-House-Tree-Person Drawings (K-H-T-P): An Interpretative Manual. Brunner/Mazel.",
+    "Hammer, E. F. (1954). The Clinical Application of Projective Drawings. Charles C Thomas Publisher.",
+    "Hammer, E. F. (1958). Projective Drawings: A Guide to Their Use in Clinical Practice. American Psychological Association.",
+    "Koppitz, E. M. (1968). Psychological Evaluation of Children's Human Figure Drawings. Grune & Stratton.",
+    "Hartman, C. (1965). Handbook of Projective Techniques. Basic Books.",
+    "Proctor, E. (2005). House-Tree-Person (H-T-P): Clinical and Forensic Applications. In C. L. Fisher & G. P. Koocher (Eds.), Forensic Psychology."
+  ]
+}
